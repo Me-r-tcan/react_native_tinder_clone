@@ -1,0 +1,8 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "javascript.format.enable": true,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "prettier.jsxSingleQuote": true,
+  "auto-rename-tag.activationOnLanguage": ["javascript"]
+}
