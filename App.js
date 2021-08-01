@@ -2,11 +2,12 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 
 import TinderCard from './src/components/TinderCard';
+import users from './assets/data/users';
 
 const App = () => {
   return (
     <View style={styles.container}>
-      <TinderCard />
+      <TinderCard user={users[1]} />
     </View>
   );
 };
