@@ -1,22 +1,38 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, useWindowDimensions} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useDerivedValue,
   useAnimatedGestureHandler,
+  interpolate,
 } from 'react-native-reanimated';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 
 import TinderCard from './src/components/TinderCard';
 import users from './assets/data/users';
 
+const ROTATION = 60;
+
 const App = () => {
+  const {width: screenWidth} = useWindowDimensions();
+
+  const hiddenTranslateX = 2 * screenWidth;
+
   const translateX = useSharedValue(0);
+  const rotate = useDerivedValue(
+    () =>
+      interpolate(translateX.value, [0, -hiddenTranslateX], [0, ROTATION]) +
+      'deg',
+  );
 
   const cardStyle = useAnimatedStyle(() => ({
     transform: [
       {
         translateX: translateX.value,
+      },
+      {
+        rotate: rotate.value,
       },
     ],
   }));
