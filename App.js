@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, useWindowDimensions} from 'react-native';
 import Animated, {
   useSharedValue,
@@ -6,6 +6,8 @@ import Animated, {
   useDerivedValue,
   useAnimatedGestureHandler,
   interpolate,
+  withSpring,
+  runOnJS,
 } from 'react-native-reanimated';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 
@@ -13,6 +15,7 @@ import TinderCard from './src/components/TinderCard';
 import users from './assets/data/users';
 
 const ROTATION = 60;
+const SWIPE_VELOCITY = 800;
 
 const App = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -67,24 +70,42 @@ const App = () => {
     onActive: (event, context) => {
       translateX.value = context.startX + event.translationX;
     },
-    onEnd: () => {
-      console.log('Touch End');
+    onEnd: event => {
+      if (Math.abs(event.velocityX) < SWIPE_VELOCITY) {
+        translateX.value = withSpring(0);
+        return;
+      }
+
+      translateX.value = withSpring(
+        hiddenTranslateX * Math.sign(event.velocityX),
+        {},
+        () => runOnJS(setCurrentIndex)(currentIndex + 1),
+      );
     },
   });
 
+  useEffect(() => {
+    translateX.value = 0;
+    setNextIndex(currentIndex + 1);
+  }, [currentIndex]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.nextCardContainer}>
-        <Animated.View style={[styles.animatedCard, nextCardStyle]}>
-          <TinderCard user={nextProfile} />
-        </Animated.View>
-      </View>
+      {nextProfile && (
+        <View style={styles.nextCardContainer}>
+          <Animated.View style={[styles.animatedCard, nextCardStyle]}>
+            <TinderCard user={nextProfile} />
+          </Animated.View>
+        </View>
+      )}
 
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View style={[styles.animatedCard, cardStyle]}>
-          <TinderCard user={currentProfile} />
-        </Animated.View>
-      </PanGestureHandler>
+      {currentProfile && (
+        <PanGestureHandler onGestureEvent={gestureHandler}>
+          <Animated.View style={[styles.animatedCard, cardStyle]}>
+            <TinderCard user={currentProfile} />
+          </Animated.View>
+        </PanGestureHandler>
+      )}
     </View>
   );
 };
