@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, useWindowDimensions} from 'react-native';
+import {View, StyleSheet, useWindowDimensions, Image} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,6 +13,8 @@ import {PanGestureHandler} from 'react-native-gesture-handler';
 
 import TinderCard from './src/components/TinderCard';
 import users from './assets/data/users';
+import Like from './assets/images/LIKE.png';
+import Nope from './assets/images/NOPE.png';
 
 const ROTATION = 60;
 const SWIPE_VELOCITY = 800;
@@ -63,6 +65,17 @@ const App = () => {
     ),
   }));
 
+  const likeStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [0, hiddenTranslateX / 5.5], [0, 1]),
+  }));
+  const nopeStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      translateX.value,
+      [0, -hiddenTranslateX / 4.5],
+      [0, 1],
+    ),
+  }));
+
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, context) => {
       context.startX = translateX.value;
@@ -102,6 +115,17 @@ const App = () => {
       {currentProfile && (
         <PanGestureHandler onGestureEvent={gestureHandler}>
           <Animated.View style={[styles.animatedCard, cardStyle]}>
+            <Animated.Image
+              source={Like}
+              style={[styles.like, {right: 10}, likeStyle]}
+              resizeMode="contain"
+            />
+            <Animated.Image
+              source={Nope}
+              style={[styles.like, {left: 10}, nopeStyle]}
+              resizeMode="contain"
+            />
+
             <TinderCard user={currentProfile} />
           </Animated.View>
         </PanGestureHandler>
@@ -118,7 +142,8 @@ const styles = StyleSheet.create({
   },
   animatedCard: {
     flex: 1,
-    width: '100%',
+    width: '90%',
+    height: '70%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -126,7 +151,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
+  },
+  like: {
+    width: 150,
+    height: 150,
+    position: 'absolute',
+    top: 10,
   },
 });
 
