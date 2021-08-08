@@ -17,7 +17,7 @@ import Nope from '../assets/images/NOPE.png';
 const ROTATION = 60;
 const SWIPE_VELOCITY = 800;
 
-const AnimatedStack = ({data, renderItem}) => {
+const AnimatedStack = ({data, renderItem, onSwipeLeft, onSwipeRight}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(currentIndex + 1);
 
@@ -92,6 +92,9 @@ const AnimatedStack = ({data, renderItem}) => {
         {},
         () => runOnJS(setCurrentIndex)(currentIndex + 1),
       );
+
+      const onSwipe = event.velocityX > 0 ? onSwipeRight : onSwipeLeft;
+      onSwipe && runOnJS(onSwipe)(currentProfile);
     },
   });
 
